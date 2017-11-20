@@ -16,6 +16,7 @@ public class Cow extends Thread {
     int move1;
     int move2;
     int wait;
+    int waist;
     int attack;
     int attackTime = 0;
     int mTeam;
