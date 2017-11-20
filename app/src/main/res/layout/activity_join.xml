@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="thetana.cow.JoinActivity">
+
+    <EditText
+        android:id="@+id/et_id_a_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="아이디"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/et_password_a_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="비밀번호"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/et_repassword_a_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="비밀번호 재확인"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/et_name_a_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="이름"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/bt_save_a_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="가입" />
+</LinearLayout>
