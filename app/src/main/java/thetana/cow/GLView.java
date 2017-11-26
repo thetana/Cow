@@ -31,6 +31,7 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
     public static final int COST_TAU = 30;
     public static final int COST_RHINO = 50;
     int coolTime_cow = 0;
+    ImageHelper ih = new ImageHelper();
     int cost = 0;
     int costCo = 0;
     int maxCost = 200;
@@ -261,6 +262,16 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
             if (!deadTexts.get(j).isAlive) {
                 texts.remove(deadTexts.get(j));
             }
+        }
+
+        if(((GameActivity) mContext).mB != null) {
+            bmp = ih.getRoundedCornerBitmap(((GameActivity) mContext).mB);
+            pixels = new int[bmp.getWidth() * bmp.getHeight()];
+            bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+            for (int j = 0; j < pixels.length; ++j) {
+                pixels[j] = ((pixels[j] & 0xff00ff00)) | ((pixels[j] & 0x000000ff) << 16) | ((pixels[j] & 0x00ff0000) >> 16);
+            }
+            nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 300, 300, 700, 200);
         }
 
         if (isEnd) {
