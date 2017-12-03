@@ -18,7 +18,7 @@ public class Fortress extends Cow {
         this.mTeam = team;
         this.id = id;
         state = RUN;
-        maxHp = 300;
+        maxHp = 500;
         hp = maxHp;
         width = 200;
         height = 250;

@@ -30,6 +30,7 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
     public static final int COST_COW = 10;
     public static final int COST_TAU = 30;
     public static final int COST_RHINO = 50;
+    public static final int COST_KING = 200;
     int coolTime_cow = 0;
     ImageHelper ih = new ImageHelper();
     int cost = 0;
@@ -127,6 +128,14 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
         }
         nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 150, 150, 310, 660);
 
+        bmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bt_king);
+        pixels = new int[bmp.getWidth() * bmp.getHeight()];
+        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+        for (int i = 0; i < pixels.length; ++i) {
+            pixels[i] = ((pixels[i] & 0xff00ff00)) | ((pixels[i] & 0x000000ff) << 16) | ((pixels[i] & 0x00ff0000) >> 16);
+        }
+        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 150, 150, 460, 660);
+
         bmp = BitmapFactory.decodeResource(mContext.getResources(), fortress1.drawableId);
         pixels = new int[bmp.getWidth() * bmp.getHeight()];
         bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
@@ -177,7 +186,6 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
         for (int i = 0; cows.size() > i; i++) {
             if (cows.get(i) != null && cows.get(i).isAlive) {
-
                 if (cows.get(i).state != Cow.ATTACK) {
                     if (cows.get(i).mTeam == 0) {
                         for (int j = 0; j < rightCows.size(); j++) {
@@ -204,7 +212,8 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
                     }
                 }
                 id = cows.get(i).drawableId;
-                g_nX = (cows.get(i).state == Cow.ATTACK) ? (int) (cows.get(i).g_nX + (cows.get(i).rp * 0.9)) : cows.get(i).g_nX;
+                g_nX = (!(cows.get(i) instanceof King) && cows.get(i).state == Cow.ATTACK)
+                        ? (int) (cows.get(i).g_nX + (cows.get(i).rp * 0.9)) : cows.get(i).g_nX;
                 bmp = BitmapFactory.decodeResource(mContext.getResources(), id);
                 pixels = new int[bmp.getWidth() * bmp.getHeight()];
                 bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
@@ -212,6 +221,19 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
                     pixels[j] = ((pixels[j] & 0xff00ff00)) | ((pixels[j] & 0x000000ff) << 16) | ((pixels[j] & 0x00ff0000) >> 16);
                 }
                 nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), cows.get(i).imgWidth, cows.get(i).height, g_nX, 650 - cows.get(i).height);
+
+                if ((cows.get(i) instanceof King) && ((GameActivity) mContext).mB != null) {
+                    bmp = ih.getRoundedCornerBitmap(((GameActivity) mContext).mB);
+                    pixels = new int[bmp.getWidth() * bmp.getHeight()];
+                    bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+                    for (int j = 0; j < pixels.length; ++j) {
+                        pixels[j] = ((pixels[j] & 0xff00ff00)) | ((pixels[j] & 0x000000ff) << 16) | ((pixels[j] & 0x00ff0000) >> 16);
+                    }
+                    if (cows.get(i).state == Cow.ATTACK)
+                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 60, 60, g_nX + 150, 630 - cows.get(i).height);
+                    else
+                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 60, 60, g_nX + 135, 600 - cows.get(i).height);
+                }
             }
         }
 
@@ -262,16 +284,6 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
             if (!deadTexts.get(j).isAlive) {
                 texts.remove(deadTexts.get(j));
             }
-        }
-
-        if(((GameActivity) mContext).mB != null) {
-            bmp = ih.getRoundedCornerBitmap(((GameActivity) mContext).mB);
-            pixels = new int[bmp.getWidth() * bmp.getHeight()];
-            bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
-            for (int j = 0; j < pixels.length; ++j) {
-                pixels[j] = ((pixels[j] & 0xff00ff00)) | ((pixels[j] & 0x000000ff) << 16) | ((pixels[j] & 0x00ff0000) >> 16);
-            }
-            nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 300, 300, 700, 200);
         }
 
         if (isEnd) {
@@ -334,6 +346,8 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
             } else if (event.getX() > 310 && event.getX() < 310 + 150 && event.getY() > 660 && event.getY() < 660 + 150 && COST_RHINO <= cost) {
                 ((GameActivity) mContext).setCow("rhino");
                 cost = cost - COST_RHINO;
+            } else if (event.getX() > 460 && event.getX() < 460 + 150 && event.getY() > 660 && event.getY() < 660 + 150 && COST_KING <= cost) {
+                ((GameActivity) mContext).getImg();
             } else if (isEnd && event.getX() > 800 && event.getX() < 800 + 300 && event.getY() > 400 && event.getY() < 400 + 100) {
                 ((GameActivity) mContext).goLobby();
             }
@@ -350,6 +364,8 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
                 cow = new Tau(team, id);
             } else if (what.equals("rhino")) {
                 cow = new Rhino(team, id);
+            } else if (what.equals("king")) {
+                cow = new King(team, id);
             }
             cowMap.put(id, cow);
             cows.add(cow);

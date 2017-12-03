@@ -85,13 +85,28 @@
             android:visibility="gone"
             app:srcCompat="@mipmap/ic_launcher_round" />
 
-        <Button
-            android:id="@+id/bt_face_a_game"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="Button"
-            android:visibility="gone" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_face_a_game"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="전송"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/bt_cancel_a_game"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="취소"
+                android:visibility="gone" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

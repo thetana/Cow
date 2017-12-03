@@ -1,7 +1,6 @@
 package thetana.cow;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -80,10 +79,10 @@ public class GameActivity extends AppCompatActivity
     String roomId;
     LinearLayout ll_game, ll_chat, ll_face;
     EditText et_text;
-    Button bt_send, button5, bt_face;
+    Button bt_send, bt_cancel, bt_face;
     String[] ids;
     String[] names;
-    Bitmap mB = null;
+    Bitmap mB = null, face1 = null, face2 = null;
     ImageHelper ih = new ImageHelper();
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -113,7 +112,7 @@ public class GameActivity extends AppCompatActivity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_game);
-        imageView = (ImageView)findViewById(R.id.iv_face_a_game);
+        imageView = (ImageView) findViewById(R.id.iv_face_a_game);
         handler = new ImageHandler();
 
         ll_game = (LinearLayout) findViewById(R.id.ll_game_a_game);
@@ -121,7 +120,7 @@ public class GameActivity extends AppCompatActivity
         ll_face = (LinearLayout) findViewById(R.id.ll_face_a_game);
         et_text = (EditText) findViewById(R.id.et_text_a_game);
         bt_send = (Button) findViewById(R.id.bt_send_a_game);
-        button5 = (Button) findViewById(R.id.button5);
+        bt_cancel = (Button) findViewById(R.id.bt_cancel_a_game);
         bt_face = (Button) findViewById(R.id.bt_face_a_game);
         try {
             ids = new String[getIntent().getIntExtra("roomSect", 4)];
@@ -156,7 +155,7 @@ public class GameActivity extends AppCompatActivity
             } else read_cascade_file(); //추가
         } else read_cascade_file(); //추가
 
-        mOpenCvCameraView = (CameraBridgeViewBase)findViewById(R.id.activity_surface_view);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.GONE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
@@ -190,18 +189,6 @@ public class GameActivity extends AppCompatActivity
                 }
             }
         });
-        button5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-                mOpenCvCameraView.setVisibility(View.VISIBLE);
-                ll_face.setVisibility(View.VISIBLE);
-                imageView.setVisibility(View.VISIBLE);
-                bt_face.setVisibility(View.VISIBLE);
-                mB = null;
-            }
-        });
         bt_face.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,12 +196,38 @@ public class GameActivity extends AppCompatActivity
                 setBitmap(mB);
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 bt_face.setVisibility(View.GONE);
+                bt_cancel.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
+                ll_face.setVisibility(View.GONE);
+                mOpenCvCameraView.setVisibility(View.GONE);
+                mOpenCvCameraView.setVisibility(SurfaceView.GONE);
+                setCow("king");
+                mGLView.cost = mGLView.cost - GLView.COST_KING;
+            }
+        });
+        bt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                bt_face.setVisibility(View.GONE);
+                bt_cancel.setVisibility(View.GONE);
                 imageView.setVisibility(View.GONE);
                 ll_face.setVisibility(View.GONE);
                 mOpenCvCameraView.setVisibility(View.GONE);
                 mOpenCvCameraView.setVisibility(SurfaceView.GONE);
             }
         });
+    }
+
+    void getImg() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setVisibility(View.VISIBLE);
+        ll_face.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
+        bt_face.setVisibility(View.VISIBLE);
+        bt_cancel.setVisibility(View.VISIBLE);
+        mB = null;
     }
 
     private ServiceConnection conn = new ServiceConnection() {
@@ -290,19 +303,22 @@ public class GameActivity extends AppCompatActivity
         @Override
         public void handleMessage(Message msg) {
             try {
-                if(msg.what == 2){
-                    byte[] data = (byte[])msg.obj;
+                if (msg.what == 2) {
+                    byte[] data = (byte[]) msg.obj;
                     mB = BitmapFactory.decodeByteArray(data, 0, data.length);
-                }else {
+                } else {
                     JSONObject jsonObject = new JSONObject(msg.obj.toString());
                     String order = jsonObject.getString("order");
                     if (order.equals("setCow")) {
                         mGLView.setCow(jsonObject.getInt("team"), jsonObject.getString("cowId"), jsonObject.getString("what"));
                     } else if (order.equals("attackCow")) {
-                        mGLView.cowMap.get(jsonObject.getString("from")).state = Cow.ATTACK;
-                        mGLView.cowMap.get(jsonObject.getString("to")).hp = jsonObject.getInt("hp");
-                        if (jsonObject.getInt("hp") <= 0) {
-                            mGLView.cowMap.get(jsonObject.getString("to")).isAlive = false;
+                        if (mGLView.cowMap.containsKey(jsonObject.getString("from"))
+                                && mGLView.cowMap.containsKey(jsonObject.getString("to"))) {
+                            mGLView.cowMap.get(jsonObject.getString("from")).state = Cow.ATTACK;
+                            mGLView.cowMap.get(jsonObject.getString("to")).hp = jsonObject.getInt("hp");
+                            if (jsonObject.getInt("hp") <= 0) {
+                                mGLView.cowMap.get(jsonObject.getString("to")).isAlive = false;
+                            }
                         }
                     } else if (order.equals("setText")) {
                         mGLView.setTextBitmap(jsonObject.getString("userName") + " : " + jsonObject.getString("text"), 60);
@@ -318,6 +334,7 @@ public class GameActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
@@ -482,6 +499,7 @@ public class GameActivity extends AppCompatActivity
         System.loadLibrary("opencv_java3");
         System.loadLibrary("native-lib");
     }
+
     class ImageHandler extends Handler {
         @Override
         public void handleMessage(android.os.Message msg) {
