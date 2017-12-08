@@ -201,7 +201,6 @@ public class GameActivity extends AppCompatActivity
                 ll_face.setVisibility(View.GONE);
                 mOpenCvCameraView.setVisibility(View.GONE);
                 mOpenCvCameraView.setVisibility(SurfaceView.GONE);
-                setCow("king");
                 mGLView.cost = mGLView.cost - GLView.COST_KING;
             }
         });
@@ -305,7 +304,12 @@ public class GameActivity extends AppCompatActivity
             try {
                 if (msg.what == 2) {
                     byte[] data = (byte[]) msg.obj;
-                    mB = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    JSONObject jsonObject = new JSONObject(new String(data));
+                    String order = jsonObject.getString("order");
+                    if (order.equals("setBitmap")) {
+                        mB = ih.stringToBitMap(jsonObject.getString("what"));
+                        mGLView.setCow(jsonObject.getInt("team"), jsonObject.getString("cowId"), "king");
+                    }
                 } else {
                     JSONObject jsonObject = new JSONObject(msg.obj.toString());
                     String order = jsonObject.getString("order");
@@ -361,7 +365,16 @@ public class GameActivity extends AppCompatActivity
 
     void setBitmap(Bitmap what) {
         if (messenger != null) {
-            byte[] data = ih.getImageByte(what);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("order", "setBitmap");
+                jsonObject.put("roomId", roomId);
+                jsonObject.put("userId", myId);
+                jsonObject.put("what", ih.bitMapToString(what));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            byte[] data = jsonObject.toString().getBytes();
             Message msg = Message.obtain(null, SocketService.SETIMG);
             msg.obj = data;
             try {
