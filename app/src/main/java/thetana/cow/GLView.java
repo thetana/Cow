@@ -222,17 +222,17 @@ public class GLView extends GLSurfaceView implements GLSurfaceView.Renderer {
                 }
                 nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), cows.get(i).imgWidth, cows.get(i).height, g_nX, 650 - cows.get(i).height);
 
-                if ((cows.get(i) instanceof King) && ((GameActivity) mContext).mB != null) {
-                    bmp = ih.getRoundedCornerBitmap(((GameActivity) mContext).mB);
+                if ((cows.get(i) instanceof King) && ((GameActivity) mContext).face.get(cows.get(i).id) != null) {
+                    bmp = ih.getRoundedCornerBitmap(((GameActivity) mContext).face.get(cows.get(i).id));
                     pixels = new int[bmp.getWidth() * bmp.getHeight()];
                     bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
                     for (int j = 0; j < pixels.length; ++j) {
                         pixels[j] = ((pixels[j] & 0xff00ff00)) | ((pixels[j] & 0x000000ff) << 16) | ((pixels[j] & 0x00ff0000) >> 16);
                     }
                     if (cows.get(i).state == Cow.ATTACK)
-                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 60, 60, g_nX + 150, 630 - cows.get(i).height);
+                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 130, 130, g_nX + 130, 570 - cows.get(i).height);
                     else
-                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 60, 60, g_nX + 135, 600 - cows.get(i).height);
+                        nativeSetTextureData(pixels, bmp.getWidth(), bmp.getHeight(), 130, 130, g_nX + 100, 550 - cows.get(i).height);
                 }
             }
         }

@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +31,7 @@ public class FriendActivity extends AppCompatActivity {
     String myName;
     FriendAdapter adapter = new FriendAdapter();
     ListView lv_list;
-    Button bt_new, bt_mine, bt_search;
+    Button bt_new, bt_mine, bt_search, bt_back;
     EditText et_search;
     LinearLayout ll_search;
 
@@ -46,6 +47,8 @@ public class FriendActivity extends AppCompatActivity {
         bt_mine = (Button) findViewById(R.id.bt_mine_a_friend);
         bt_new = (Button) findViewById(R.id.bt_new_a_friend);
         bt_search = (Button) findViewById(R.id.bt_search_a_friend);
+        bt_back = (Button) findViewById(R.id.bt_back_a_friend);
+
         et_search = (EditText) findViewById(R.id.et_search_a_friend);
         Intent intent = new Intent(getApplicationContext(), SocketService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
@@ -65,7 +68,13 @@ public class FriendActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        bt_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
+                startActivity(intent);
+            }
+        });
         bt_new.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,6 +187,7 @@ public class FriendActivity extends AppCompatActivity {
                     startActivity(intent);
                 }  else if (order.equals("getFriend")) {
                     JSONArray jsonArray = new JSONArray(jsonObject.getString("friends"));
+                    adapter.clearItem();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject object = new JSONObject(jsonArray.getString(i));
                         FriendItem item = new FriendItem(object.getString("sect"));
@@ -191,6 +201,8 @@ public class FriendActivity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 } else if (order.equals("getMine")) {
                     adapter.removeItem(jsonObject.getString("userId"));
+                } else if (order.equals("msg")) {
+                    Toast.makeText(getApplicationContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

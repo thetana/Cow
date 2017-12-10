@@ -296,8 +296,37 @@ public class LobbyActivity extends Activity {
 
                         bt_cancel.setVisibility(View.GONE);
                     }
+                } else if (order.equals("invite")) {
+                    joinRoom(jsonObject.getString("roomId"));
+                } else if (order.equals("getRoomInfo")) {
+                    Intent intent = new Intent(LobbyActivity.this, RoomActivity.class);
+                    intent.putExtra("roomId", jsonObject.getString("roomId"));
+                    intent.putExtra("roomSect", jsonObject.getInt("roomSect"));
+                    intent.putExtra("roomName", jsonObject.getString("roomName"));
+                    intent.putExtra("master", jsonObject.getString("master"));
+                    intent.putExtra("players", jsonObject.getString("players"));
+                    startActivity(intent);
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void joinRoom(String roomId) {
+        if (messenger != null) {
+            Message msg = Message.obtain(null, SocketService.SETCOW);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("order", "joinRoom");
+                jsonObject.put("roomId", roomId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            msg.obj = jsonObject;
+            try {
+                messenger.send(msg);
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }

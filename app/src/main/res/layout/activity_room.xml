@@ -87,6 +87,7 @@
         android:paddingTop="1dp">
 
         <LinearLayout
+            android:id="@+id/ll_friend_a_room"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="1dp"
@@ -105,6 +106,43 @@
             android:paddingRight="1dp"
             android:paddingStart="1dp"
             android:paddingTop="1dp">
+
+            <Button
+                android:id="@+id/bt_invite_a_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="친구초대하기" />
+
+            <ListView
+                android:id="@+id/lv_friend_a_room"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_chat_a_room"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_weight="4"
+            android:orientation="vertical"
+            android:padding="1dp"
+            android:paddingBottom="1dp"
+            android:paddingEnd="1dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
+            android:paddingStart="1dp"
+            android:paddingTop="1dp"
+            android:visibility="gone">
 
             <ListView
                 android:layout_width="match_parent"
@@ -247,7 +285,8 @@
                             android:id="@+id/bt_p1_a_room"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="방장임명" />
+                            android:text="방장임명"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -347,7 +386,8 @@
                             android:id="@+id/bt_p2_a_room"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="방장임명" />
+                            android:text="방장임명"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -468,7 +508,8 @@
                             android:id="@+id/bt_p3_a_room"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="방장임명" />
+                            android:text="방장임명"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -568,7 +609,8 @@
                             android:id="@+id/bt_p4_a_room"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="방장임명" />
+                            android:text="방장임명"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <LinearLayout

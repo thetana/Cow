@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 public class GameActivity extends AppCompatActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {
@@ -83,6 +84,7 @@ public class GameActivity extends AppCompatActivity
     String[] ids;
     String[] names;
     Bitmap mB = null, face1 = null, face2 = null;
+    HashMap<String, Bitmap> face = new HashMap<String, Bitmap>();
     ImageHelper ih = new ImageHelper();
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -307,7 +309,7 @@ public class GameActivity extends AppCompatActivity
                     JSONObject jsonObject = new JSONObject(new String(data));
                     String order = jsonObject.getString("order");
                     if (order.equals("setBitmap")) {
-                        mB = ih.stringToBitMap(jsonObject.getString("what"));
+                        face.put(jsonObject.getString("cowId"), ih.stringToBitMap(jsonObject.getString("what")));
                         mGLView.setCow(jsonObject.getInt("team"), jsonObject.getString("cowId"), "king");
                     }
                 } else {

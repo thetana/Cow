@@ -58,12 +58,24 @@
         <activity
             android:name=".JoinActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".LobbyActivity" />
-        <activity android:name=".RecordActivity" />
-        <activity android:name=".MakeRoomActivity" />
-        <activity android:name=".SearchRoomActivity" />
-        <activity android:name=".RoomActivity" />
-        <activity android:name=".FriendActivity"></activity>
+        <activity
+            android:name=".LobbyActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".RecordActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".MakeRoomActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".SearchRoomActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".RoomActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".FriendActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

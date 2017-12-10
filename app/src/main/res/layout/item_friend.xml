@@ -54,4 +54,12 @@
         android:text="친구하기"
         android:textSize="18sp"
         android:visibility="gone" />
+
+    <Button
+        android:id="@+id/bt_invite_i_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="게임초대하기"
+        android:textSize="18sp"
+        android:visibility="gone" />
 </LinearLayout>

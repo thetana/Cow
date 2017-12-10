@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -32,7 +33,9 @@ public class RoomActivity extends Activity {
     String roomId;
     String master;
     int roomSect;
-    Button bt_p1, bt_p2, bt_p3, bt_p4, bt_start, bt_out;
+    FriendAdapter adapter = new FriendAdapter();
+    ListView lv_list;
+    Button bt_p1, bt_p2, bt_p3, bt_p4, bt_start, bt_out, bt_invite;
     EditText et_name;
     TextView tv_m1, tv_m2, tv_m3, tv_m4, tv_name1, tv_name2, tv_name3, tv_name4;
     ImageView iv_p1, iv_p2, iv_p3, iv_p4;
@@ -45,6 +48,7 @@ public class RoomActivity extends Activity {
         sp = getSharedPreferences("me", 0);
         myId = sp.getString("id", "");
         myName = sp.getString("name", "");
+        lv_list = (ListView) findViewById(R.id.lv_friend_a_room);
         et_name = (EditText) findViewById(R.id.et_name_a_room);
         bt_start = (Button) findViewById(R.id.bt_start_a_room);
         bt_out = (Button) findViewById(R.id.bt_out_a_room);
@@ -68,9 +72,11 @@ public class RoomActivity extends Activity {
         bt_p2 = (Button) findViewById(R.id.bt_p2_a_room);
         bt_p3 = (Button) findViewById(R.id.bt_p3_a_room);
         bt_p4 = (Button) findViewById(R.id.bt_p4_a_room);
+        bt_invite = (Button) findViewById(R.id.bt_invite_a_room);
         Intent intent = new Intent(getApplicationContext(), SocketService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
 
+        lv_list.setAdapter(adapter);
 
         iv_p1.setVisibility(View.INVISIBLE);
         iv_p2.setVisibility(View.INVISIBLE);
@@ -97,6 +103,32 @@ public class RoomActivity extends Activity {
             ll_p3.setVisibility(View.INVISIBLE);
             ll_p4.setVisibility(View.INVISIBLE);
         }
+
+        bt_invite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (messenger != null) {
+                    Message msg = Message.obtain(null, SocketService.SETCOW);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("order", "getFriend");
+                        jsonObject.put("userId", myId);
+                        jsonObject.put("sect", "invite");
+                        jsonObject.put("search", "");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    msg.obj = jsonObject;
+                    try {
+                        messenger.send(msg);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //bt_invite.setVisibility(View.GONE);
+                lv_list.setVisibility(View.VISIBLE);
+            }
+        });
 
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,6 +303,8 @@ public class RoomActivity extends Activity {
                     JSONArray jsonArray = new JSONArray(jsonObject.getString("players"));
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject object = new JSONObject(jsonArray.getString(i));
+                        if (adapter.containsItem(object.getString("userId")))
+                            adapter.removeItem(object.getString("userId"));
                         if (object.getInt("userTeam") == 0) {
                             iv_p1.setVisibility(View.VISIBLE);
                             tv_name1.setVisibility(View.VISIBLE);
@@ -330,8 +364,39 @@ public class RoomActivity extends Activity {
                 } else if (order.equals("outRoom")) {
                     Intent intent = new Intent(RoomActivity.this, LobbyActivity.class);
                     startActivity(intent);
+                } else if (order.equals("getFriend")) {
+                    JSONArray jsonArray = new JSONArray(jsonObject.getString("friends"));
+                    adapter.clearItem();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject object = new JSONObject(jsonArray.getString(i));
+                        FriendItem item = new FriendItem(object.getString("sect"));
+                        item.userId = object.getString("userId");
+                        item.name = object.getString("name");
+                        item.pop = object.getString("pop");
+                        adapter.addItem(item);
+                    }
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void invite(String userId) {
+        if (messenger != null) {
+            Message msg = Message.obtain(null, SocketService.SETCOW);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("order", "invite");
+                jsonObject.put("roomId", roomId);
+                jsonObject.put("userId", userId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            msg.obj = jsonObject;
+            try {
+                messenger.send(msg);
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
