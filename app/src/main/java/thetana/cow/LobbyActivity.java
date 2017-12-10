@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,7 +25,7 @@ public class LobbyActivity extends Activity {
     SharedPreferences sp;
     String myId;
     String myName;
-    Button bt_quick, bt_make, bt_search, bt_single, bt_multi, bt_back, bt_cancel;
+    Button bt_quick, bt_make, bt_search, bt_single, bt_multi, bt_back, bt_cancel, bt_friend;
     TextView tv_name;
 
     @Override
@@ -43,6 +42,7 @@ public class LobbyActivity extends Activity {
         bt_multi = (Button) findViewById(R.id.bt_multi_a_lobby);
         bt_back = (Button) findViewById(R.id.bt_back_a_lobby);
         bt_cancel = (Button) findViewById(R.id.bt_cancel_a_lobby);
+        bt_friend = (Button) findViewById(R.id.bt_friend_a_lobby);
         tv_name = (TextView) findViewById(R.id.tv_name_a_lobby);
         tv_name.setText(myName);
 
@@ -179,6 +179,29 @@ public class LobbyActivity extends Activity {
                 }
             }
         });
+        bt_friend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (messenger != null) {
+                    Message msg = Message.obtain(null, SocketService.SETCOW);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("order", "getFriend");
+                        jsonObject.put("userId", myId);
+                        jsonObject.put("sect", "mine");
+                        jsonObject.put("search", "");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    msg.obj = jsonObject;
+                    try {
+                        messenger.send(msg);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -246,6 +269,10 @@ public class LobbyActivity extends Activity {
                 } else if (order.equals("searchRoom")) {
                     Intent intent = new Intent(LobbyActivity.this, SearchRoomActivity.class);
                     intent.putExtra("rooms", jsonObject.getString("rooms"));
+                    startActivity(intent);
+                } else if (order.equals("getFriend")) {
+                    Intent intent = new Intent(LobbyActivity.this, FriendActivity.class);
+                    intent.putExtra("friends", jsonObject.getString("friends"));
                     startActivity(intent);
                 } else if (order.equals("isWait")) {
                     if (jsonObject.getBoolean("isWait")) {
